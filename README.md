@@ -4,4 +4,4 @@ I forked the https://github.com/VolosR/TTGOWeatherStation project and made it wo
 
 I tidied up the code to make it more readable and here you have a screenshot of the software running.
 
-![Photo of running device](resources/photo.png)
+![Photo of running device](photo.png)

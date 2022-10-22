@@ -7,7 +7,7 @@
 #include <WiFiUdp.h>
 #include <HTTPClient.h>
 
-#include "include/lilygo_esp32_s3_tdisplay_pin_config.h"
+#include "include/esp32s3_lilygo_tdisplay_pin_config.h"
 #include "resources/images/animation.h"
 #include "resources/fonts/orbitron_medium_20.h"
 

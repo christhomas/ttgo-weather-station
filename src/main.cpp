@@ -1,4 +1,9 @@
-#include <pgmspace.h>
+#ifdef __AVR__
+  #include <avr/pgmspace.h>
+#else
+  #include <pgmspace.h>
+#endif
+
 #include <SPI.h>
 #include <TFT_eSPI.h>
 #include <ArduinoJson.h>
@@ -7,7 +12,7 @@
 #include <WiFiUdp.h>
 #include <HTTPClient.h>
 
-#include "include/esp32s3_lilygo_tdisplay_pin_config.h"
+#include <pin_config.h>
 #include "resources/images/animation.h"
 #include "resources/fonts/orbitron_medium_20.h"
 
@@ -22,18 +27,19 @@ const int pwmFreq = 5000;
 const int pwmResolution = 8;
 const int pwmLedChannelTFT = 0;
 
-// SET YOUR WIFI ACCESS DETAILS
-const char *ssid = "<EDIT THIS>";
-const char *password = "<EDIT THIS>";
+/** 
+ * Configuration data from config.cpp
+ * 
+ * Copy config.cpp.template => config.cpp
+ * Edit the contents with the values that you want to use
+ */
+extern const char *town;
+extern const char *country;
+extern const char *ssid;
+extern const char *password;
+extern const char *api_key;
 
-// SET WHAT LOCATION TO TAKE THE WEATHER MEASUREMENTS FROM
-String town = "Berlin";
-String Country = "DE";
-
-// SET YOUR OPENWEATHERMAP ENDPOINT AND API KEY
-const char *api_key = "<EDIT THIS>";
-const String endpoint = "http://api.openweathermap.org/data/2.5/weather?q=" + town + "," + Country + "&units=metric&APPID=" + api_key;
-
+const char *endpoint = "http://api.openweathermap.org/data/2.5/weather";
 String payload = ""; // whole json
 String tmp = "";     // temperature
 String hum = "";     // humidity
@@ -54,6 +60,24 @@ byte b = 4;
 
 TFT_eSPI tft = TFT_eSPI();
 
+const char * get_endpoint(const char *endpoint, const char *town, const char *country, const char *api_key)
+{
+  const char *format = "%s?q=%s,%s&units=metric&appid=%s";
+
+  int format_len = strlen(format);
+  int endpoint_len = strlen(endpoint);
+  int town_len = strlen(town);
+  int country_len = strlen(country);
+  int api_key_len = strlen(api_key);
+  int total_len = format_len + endpoint_len + town_len + country_len + api_key_len;
+
+  char *output = (char *)malloc(total_len * sizeof(char) + 1);
+
+  snprintf(output, total_len, format, endpoint, town, country, api_key);
+
+  return (const char *)output;
+}
+
 void getData()
 {
   tft.fillRect(1, 170, 64, 20, TFT_BLACK);
@@ -63,8 +87,11 @@ void getData()
   if ((WiFi.status() == WL_CONNECTED)) {
     HTTPClient http;
 
-    http.begin(endpoint); // Specify the URL
+    // Specify the URL
+    const char *url = get_endpoint(endpoint, town, country, api_key);
+    http.begin(url); 
     int httpCode = http.GET();  // Make the request
+    free((void *)url);
 
     // Check for the returning code
     if (httpCode > 0)
@@ -95,6 +122,9 @@ void getData()
 
 void setup(void)
 {
+  Serial.begin(115200);
+  Serial.println("setup starting...");
+
   // pinMode(PIN_BUTTON_1, INPUT_PULLUP);
   // pinMode(PIN_BUTTON_2, INPUT_PULLUP);
 
@@ -108,7 +138,6 @@ void setup(void)
   ledcAttachPin(PIN_LCD_BL, pwmLedChannelTFT);
   ledcWrite(pwmLedChannelTFT, backlight[b]);
 
-  Serial.begin(115200);
   tft.print("Connecting to ");
   tft.println(ssid);
   WiFi.begin(ssid, password);
@@ -123,7 +152,14 @@ void setup(void)
   tft.println("WiFi connected.");
   tft.println("IP address: ");
   tft.println(WiFi.localIP());
+
+  const char *url = get_endpoint(endpoint, town, country, api_key);
+  tft.print("Endpoint: ");
+  tft.println(url);
+  free((void *)url);
+
   delay(3000);
+  
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.setTextSize(1);
   tft.fillScreen(TFT_BLACK);

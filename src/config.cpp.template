@@ -1,0 +1,14 @@
+/**
+ * You must copy this file to config.cpp and edit the below information to correctly compile the software
+ */
+
+// SET WHAT LOCATION TO TAKE THE WEATHER MEASUREMENTS FROM
+const char *town = "Berlin";
+const char *country = "DE";
+
+// SET THE WIFI ACCESS DETAILS
+const char *ssid = "<EDIT THIS>";
+const char *password = "<EDIT THIS>";
+
+// SET THE OPENWEATHERMAP API KEY
+const char *api_key = "<EDIT THIS>";

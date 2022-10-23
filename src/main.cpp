@@ -209,23 +209,21 @@ int press2 = 0;
 int frame = 0;
 String curSeconds = "";
 
+#define COL_1 0
+#define MAX_PORTRAIT_WIDTH 170
+
 void loop()
-{
-  tft.pushImage(0, 88, 135, 65, ani[frame]);
-  frame++;
-  if (frame >= 10) {
-    frame = 0;
-  }
+{  
+  tft.pushImage(COL_1, 88, MAX_PORTRAIT_WIDTH, 60, ani[frame]);
+
+  frame = (frame + 1) % 10;
 
   if (digitalRead(35) == 0) {
     if (press2 == 0) {
       press2 = 1;
       tft.fillRect(78, 216, 44, 12, TFT_BLACK);
 
-      b++;
-      if (b >= 5) {
-        b = 0;
-      }
+      b = (b + 1) % 5;
 
       for (int i = 0; i < b + 1; i++) {
         tft.fillRect(78 + (i * 7), 216, 3, 10, blue);
@@ -251,10 +249,7 @@ void loop()
     getData();
   }
 
-  count++;
-  if (count > 2000){
-    count = 0;
-  }
+  count = (count + 1) % 2000;
 
   tft.setFreeFont(&Orbitron_Medium_20);
   tft.setCursor(2, 187);

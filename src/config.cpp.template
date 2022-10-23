@@ -10,5 +10,6 @@ const char *country = "DE";
 const char *ssid = "<EDIT THIS>";
 const char *password = "<EDIT THIS>";
 
-// SET THE OPENWEATHERMAP API KEY
+// SET THE OPENWEATHERMAP DETAILS
+const char *endpoint = "http://api.openweathermap.org/data/2.5/weather";
 const char *api_key = "<EDIT THIS>";

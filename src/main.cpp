@@ -38,8 +38,9 @@ extern const char *country;
 extern const char *ssid;
 extern const char *password;
 extern const char *api_key;
+extern const char *endpoint;
 
-const char *endpoint = "http://api.openweathermap.org/data/2.5/weather";
+const char *url = NULL;
 String payload = ""; // whole json
 String tmp = "";     // temperature
 String hum = "";     // humidity
@@ -85,13 +86,10 @@ void getData()
 
   // Check the current connection status
   if ((WiFi.status() == WL_CONNECTED)) {
+    // Query the weather data
     HTTPClient http;
-
-    // Specify the URL
-    const char *url = get_endpoint(endpoint, town, country, api_key);
     http.begin(url); 
     int httpCode = http.GET();  // Make the request
-    free((void *)url);
 
     // Check for the returning code
     if (httpCode > 0)
@@ -153,10 +151,8 @@ void setup(void)
   tft.println("IP address: ");
   tft.println(WiFi.localIP());
 
-  const char *url = get_endpoint(endpoint, town, country, api_key);
-  tft.print("Endpoint: ");
-  tft.println(url);
-  free((void *)url);
+  // Set the url for getting weather data from
+  url = get_endpoint(endpoint, town, country, api_key);
 
   delay(3000);
   
